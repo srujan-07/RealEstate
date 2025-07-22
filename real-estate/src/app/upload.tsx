@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { ethers, BrowserProvider } from "ethers";
-import PinataUpload from "./PinataUpload";
+// PinataUpload import removed
 
 const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!;
 const CONTRACT_ABI = [
@@ -22,28 +22,20 @@ const UploadPage = () => {
   const [loading, setLoading] = useState(false);
   const [wallet, setWallet] = useState<string | null>(null);
   const [price, setPrice] = useState<string>("");
-  const [ipfsHash, setIpfsHash] = useState<string | null>(null);
+  // Remove ipfsHash state
 
   React.useEffect(() => {
     const ethereum = (window as any).ethereum;
     if (!ethereum) return;
-
-    // Set wallet on page load
     ethereum.request({ method: "eth_accounts" }).then((accounts: string[]) => {
-      console.log("useEffect page load accounts:", accounts);
       setWallet(accounts[0] || null);
       setStatus(accounts[0] ? "Wallet connected: " + accounts[0] : "Wallet not connected");
     });
-
-    // Listen for account changes
     const handleAccountsChanged = (accounts: string[]) => {
-      console.log("accountsChanged event:", accounts);
       setWallet(accounts[0] || null);
       setStatus(accounts[0] ? "Wallet connected: " + accounts[0] : "Wallet disconnected");
     };
     ethereum.on("accountsChanged", handleAccountsChanged);
-
-    // Cleanup
     return () => {
       ethereum.removeListener("accountsChanged", handleAccountsChanged);
     };
@@ -54,7 +46,6 @@ const UploadPage = () => {
       const ethereum = (window as any).ethereum;
       if (!ethereum) throw new Error("MetaMask not found");
       const accounts = await ethereum.request({ method: "eth_requestAccounts" });
-      console.log("connectWallet accounts:", accounts);
       setWallet(accounts[0] || null);
       setStatus(accounts[0] ? "Wallet connected: " + accounts[0] : "Wallet not connected");
     } catch (err: any) {
@@ -62,6 +53,7 @@ const UploadPage = () => {
     }
   };
 
+  // Remove handleRegister's ipfsHash checks and usage
   const handleRegister = async () => {
     if (!CONTRACT_ADDRESS) {
       setStatus("Missing contract address. Please set up your .env.local file.");
@@ -75,17 +67,14 @@ const UploadPage = () => {
       setStatus("Please enter a valid price.");
       return;
     }
-    if (!ipfsHash) {
-      setStatus("Please upload a file to Pinata first.");
-      return;
-    }
     setLoading(true);
     setStatus("Registering property on blockchain...");
     try {
       const provider = new BrowserProvider((window as any).ethereum);
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-      const tx = await contract.registerProperty(ipfsHash, ethers.parseEther(price));
+      // Replace ipfsHash with a placeholder or new logic
+      const tx = await contract.registerProperty("", ethers.parseEther(price));
       setStatus("Transaction sent. Waiting for confirmation...");
       await tx.wait();
       setStatus("Property registered successfully! Transaction hash: " + tx.hash);
@@ -106,7 +95,7 @@ const UploadPage = () => {
       >
         {wallet ? `Wallet Connected: ${wallet.slice(0, 6)}...${wallet.slice(-4)}` : "Connect Wallet"}
       </button>
-      <PinataUpload onUploadSuccess={setIpfsHash} />
+      {/* Remove PinataUpload and related UI */}
       <input
         type="number"
         placeholder="Property Price (ETH)"
@@ -120,7 +109,7 @@ const UploadPage = () => {
       <button
         onClick={handleRegister}
         style={{ padding: "0.5rem 1.5rem", fontSize: "1rem", cursor: "pointer", borderRadius: "5px", border: "1px solid #ccc", background: "#f5f5f5" }}
-        disabled={loading || !wallet || !ipfsHash}
+        disabled={loading || !wallet}
       >
         {loading ? "Registering..." : "Register Property"}
       </button>
