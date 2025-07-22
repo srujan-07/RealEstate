@@ -60,9 +60,32 @@ const PinataUpload: React.FC<PinataUploadProps> = ({ onUploadSuccess }) => {
       />
       <button
         onClick={handleButtonClick}
-        style={{ padding: "0.5rem 1.5rem", fontSize: "1rem", cursor: "pointer", borderRadius: "5px", border: "1px solid #ccc", background: "#f5f5f5" }}
+        style={{
+          padding: "0.5rem 1.5rem",
+          fontSize: "1rem",
+          cursor: loading ? "not-allowed" : "pointer",
+          borderRadius: "5px",
+          border: "none",
+          background: loading ? "#90caf9" : "#1976d2",
+          color: "#fff",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem",
+          transition: "background 0.2s",
+          boxShadow: loading ? "none" : "0 2px 8px rgba(25, 118, 210, 0.08)",
+        }}
         disabled={loading}
+        onMouseOver={e => {
+          if (!loading) (e.currentTarget as HTMLButtonElement).style.background = '#1565c0';
+        }}
+        onMouseOut={e => {
+          if (!loading) (e.currentTarget as HTMLButtonElement).style.background = '#1976d2';
+        }}
       >
+        {/* SVG upload icon */}
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12" />
+        </svg>
         {loading ? "Uploading..." : "Choose File & Upload to Pinata"}
       </button>
       {status && <p style={{ marginTop: "0.5rem", maxWidth: 400, textAlign: "center" }}>{status}</p>}
