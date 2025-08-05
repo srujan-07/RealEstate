@@ -1,0 +1,121 @@
+# ========================
+# Hardhat Backend
+# Blockchain Development .gitignore
+# ========================
+
+# ============
+# Node.js
+# ============
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+package-lock.json
+
+# ============
+# Hardhat Specific
+# ============
+# Compiled contracts
+cache/
+artifacts/
+typechain/
+typechain-types/
+
+# Coverage reports
+coverage/
+coverage.json
+.coverage_artifacts
+.coverage_cache
+.coverage_contracts
+
+# ============
+# Environment & Secrets
+# ============
+# Environment variables (CRITICAL: Never commit these!)
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Private keys and wallet files (CRITICAL!)
+*.key
+*.pem
+private-keys/
+keys/
+keystore/
+mnemonic.txt
+seed.txt
+wallet.dat
+
+# Network configuration with sensitive data
+hardhat.config.local.js
+truffle-config.local.js
+
+# Deployment addresses (if they contain sensitive info)
+deployed-addresses.json
+contract-addresses.json
+
+# ============
+# Testing & Debugging
+# ============
+# Test artifacts
+test-results/
+.nyc_output/
+junit.xml
+
+# Gas reports
+gas-report.txt
+.gas-snapshot
+
+# ============
+# Logs
+# ============
+*.log
+logs/
+ganache-cli.log
+
+# ============
+# IDE & Editor
+# ============
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ============
+# OS
+# ============
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+
+# ============
+# Backup & Temporary
+# ============
+*.backup
+*.bak
+*.old
+tmp/
+temp/
+
+# ============
+# Custom Scripts
+# ============
+# Scripts that might contain sensitive deployment info
+deploy-mainnet.js
+deploy-production.js
+*secret*
+*private*
+
+# Local development files
+local-config.json
+test-accounts.json
+
+# ============
+# Documentation Build
+# ============
+docs/build/
+api-docs/

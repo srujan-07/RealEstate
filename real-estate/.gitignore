@@ -1,4 +1,7 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# ========================
+# Next.js RealEstate Frontend
+# Enhanced .gitignore
+# ========================
 
 # dependencies
 /node_modules
@@ -30,8 +33,11 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files (IMPORTANT: Keep these secure!)
 .env*
+.env.local
+.env.development
+.env.production
 
 # vercel
 .vercel
@@ -39,3 +45,47 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# ============
+# Additional Exclusions
+# ============
+
+# Editor files
+.vscode/settings.json
+.idea/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Error logs
+error.log
+*.log
+
+# Backup files
+*.backup
+*.bak
+
+# OS generated files
+Thumbs.db
+.DS_Store?
+._*
+
+# Local development files
+local-config.json
+test-data.json
+
+# Wallet & Blockchain sensitive files
+*.key
+private-keys/
+wallet-backup/
+
+# Large media files (uncomment if needed)
+# *.mp4
+# *.mov
+# *.zip
+
+# Custom scripts with sensitive data
+*secret*
+*private*
