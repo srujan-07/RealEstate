@@ -1,3 +1,5 @@
+import { ethers } from 'ethers';
+
 // MetaMask Detection and Connection Utility
 // This helps bypass Phantom wallet override issues
 
@@ -8,56 +10,71 @@ export const forceMetaMaskConnection = async () => {
       throw new Error('Not in browser environment');
     }
 
+    console.log('Starting MetaMask connection...');
+
+    // Check if MetaMask is installed at all
+    if (!(window as any).ethereum) {
+      throw new Error('No wallet detected. Please install MetaMask.');
+    }
+
+    let provider = null;
+
     // Method 1: Direct MetaMask check
     if ((window as any).ethereum?.isMetaMask && !(window as any).ethereum?.isPhantom) {
       console.log('Method 1: Direct MetaMask found');
-      return (window as any).ethereum;
+      provider = (window as any).ethereum;
     }
-
     // Method 2: Check providers array
-    if ((window as any).ethereum?.providers) {
+    else if ((window as any).ethereum?.providers) {
+      console.log('Method 2: Checking providers array');
       const metaMask = (window as any).ethereum.providers.find(
         (p: any) => p.isMetaMask && !p.isPhantom
       );
       if (metaMask) {
         console.log('Method 2: MetaMask found in providers');
-        return metaMask;
+        provider = metaMask;
       }
     }
-
-    // Method 3: Force detection by checking window objects
-    const possibleMetaMask = [
-      (window as any).ethereum,
-      (window as any).web3?.currentProvider,
-      (window as any).MetaMask,
-    ].find(provider => provider?.isMetaMask);
-
-    if (possibleMetaMask) {
-      console.log('Method 3: MetaMask found via fallback');
-      return possibleMetaMask;
+    // Method 3: Fallback to any ethereum provider
+    else {
+      console.log('Method 3: Using fallback ethereum provider');
+      provider = (window as any).ethereum;
     }
 
-    // Method 4: Check if MetaMask is installed but hidden by Phantom
-    if ((window as any).ethereum) {
-      try {
-        // Try to call a MetaMask-specific method
-        const provider = (window as any).ethereum;
-        const accounts = await provider.request({
-          method: 'eth_accounts'
-        });
-        
-        // If this works, we might have MetaMask
-        console.log('Method 4: Potential MetaMask via eth_accounts');
-        return provider;
-      } catch (error) {
-        console.log('Method 4 failed:', error);
-      }
+    if (!provider) {
+      throw new Error('MetaMask provider not found');
     }
 
-    throw new Error('MetaMask not found');
-  } catch (error) {
+    // Create ethers provider
+    const ethersProvider = new ethers.BrowserProvider(provider);
+    
+    // Test connection by requesting accounts
+    console.log('Requesting account access...');
+    await provider.request({ 
+      method: 'eth_requestAccounts' 
+    });
+
+    // Verify we can get a signer
+    const signer = await ethersProvider.getSigner();
+    const address = await signer.getAddress();
+    console.log('Connected to wallet:', address);
+
+    // Return the ethers provider (not the raw ethereum provider)
+    return ethersProvider;
+
+  } catch (error: any) {
     console.error('Force MetaMask connection error:', error);
-    throw error;
+    
+    // Provide helpful error messages
+    if (error.code === 4001) {
+      throw new Error('Please approve the connection in MetaMask');
+    } else if (error.code === -32002) {
+      throw new Error('MetaMask is already processing. Please check MetaMask.');
+    } else if (error.message?.includes('User rejected')) {
+      throw new Error('Connection rejected. Please try again.');
+    } else {
+      throw new Error(`Connection failed: ${error.message}`);
+    }
   }
 };
 
